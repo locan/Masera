@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div class="layui-body" style="padding: 15px;">
+    <!-- 内容主体区域 -->
+
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">服务器</a>
+      <a><cite>列表</cite></a>
+    </span>
+    <br><br>
+    <div class="layui-btn-group">
+        <a href="/server/add" class="layui-btn">
+            <i class="layui-icon">&#xe654;</i>增加
+        </a>
+        <button class="layui-btn" id="edit-btn">
+            <i class="layui-icon">&#xe642;</i>编辑
+        </button>
+        <button class="layui-btn" id="del-btn">
+            <i class="layui-icon">&#xe640;</i>删除
+        </button>
+    </div>
+    <div class="layui-btn-group">
+        <button class="layui-btn">
+            <i class="layui-icon">&#xe64c;</i>关联组
+        </button>
+    </div>
+    <table id="demo" class="layui-table" lay-skin="row"></table>
+</div>
+<script type="text/html" id="item-tool">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe654;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe602;</i>
+        </button>
+    </div>
+</script>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+
+        //方法级渲染
+        window.demoTable = table.render({
+            elem: '#demo',
+            url: '/server/list',
+            //,width: 900,
+            height: 520,
+            cols: [[ //标题栏
+                {checkbox: true},
+                {field: 'id', title: 'ID', width: 80, sort: true},
+                {field: 'ip', title: 'IP', width: 250},
+                {field: 'login_type', title: '登录方式', width: 150},
+                {field: 'position', title: '机架位', width: 150},
+                {field: 'deploy_server', title: '部署', width: 150},
+                {field: 'purpose', title: '用途', width: 250},
+                //{field: 'title', title: '操作', width: 300, templet: '#item-tool'}
+            ]],
+            skin: 'row', //表格风格
+            even: true,
+            //,size: 'lg' //尺寸
+            skin: 'nob',
+            page: true, //是否显示分页
+            limits: [3, 5, 10],
+            limit: 3 //每页默认显示的数量
+            //,loading: false //请求数据时，是否显示loading
+            //,id: 'test' //ID
+        });
+
+    });
+</script>
+
+{% endblock%}

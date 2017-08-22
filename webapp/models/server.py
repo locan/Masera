@@ -1,5 +1,8 @@
 # -*- utf-8 -*-
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import func
 from webapp import db
+from .login_type import LoginType
 
 
 class Server(db.Model):
@@ -10,18 +13,60 @@ class Server(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String(30), nullable=False, index=True)
     purpose = db.Column(db.String(255), nullable=False)
-    login_type = db.relationship('LoginType', lazy=False)
     position = db.Column(db.String, default='')
     deploy_server = db.Column(db.String, default='')
     memo = db.Column(db.String, default='')
+    login_type = db.Column(db.Integer, db.ForeignKey('mas_login_type.id'))
+    _login_type = db.relationship('LoginType', backref=db.backref('server'),
+                        primaryjoin="Server.login_type == LoginType.id")
 
-    def __init__(self, ip, purpose, login_type, position, deploy_server, memo):
+    def __init__(self, ip=None, purpose=None, position=None, deploy_server=None, memo=None):
         self.ip = ip
         self.purpose = purpose
-        self.login_type = login_type
         self.position = position
         self.deploy_server = deploy_server
         self.memo = memo
 
+    @classmethod
+    def get_by_id(cls, id):
+        try:
+            return cls.query.filter_by(id=id).one()
+        except NoResultFound:
+            return None
+
+    @classmethod
+    def get_list(cls, server=None, page_no=1, page_size=10):
+        try:
+            q = []
+            query = cls.query
+            if server:
+                if 'position' in server:
+                    q.append(cls.position == server.get('position'))
+                if 'deploy_server' in server:
+                    q.append(cls.deploy_server == server.get('deploy_server'))
+                if 'login_type' in server:
+                    q.append(cls.login_type == server.get('login_type'))
+                if 'purpose' in server:
+                    q.append(cls.purpose == server.get('purpose'))
+            data = query.filter(*q).offset((page_no-1) * page_size).limit(page_size).all()
+            data = [s.to_dict() for s in data]
+            return {
+                'data': data,
+                'count': query.filter(*q).count()
+            }
+        except NoResultFound:
+            return None
+
     def __repr__(self):
         return '<Server %r>' % self.ip
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ip': self.ip,
+            'purpose': self.purpose,
+            'position': self.position,
+            'deploy_server': self.deploy_server,
+            'login_type': self._login_type.name,
+            'login_type_id': self.login_type
+        }
