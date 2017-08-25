@@ -3,3 +3,6 @@ Flask-SQLAlchemy==2.2
 SQLAlchemy==1.1.9
 MySQL-python==1.2.5
 Jinja2
+flask_login
+flask_wtf
+wtforms

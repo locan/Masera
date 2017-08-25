@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block title %}
+<title>服务器列表</title>
+{% endblock %}
 {% block content%}
 <div class="layui-body" style="padding: 15px;">
     <!-- 内容主体区域 -->
@@ -10,24 +12,48 @@
       <a><cite>列表</cite></a>
     </span>
     <br><br>
-    <div class="layui-btn-group">
-        <a href="/server/add" class="layui-btn">
-            <i class="layui-icon">&#xe654;</i>增加
-        </a>
-        <button class="layui-btn" id="edit-btn">
-            <i class="layui-icon">&#xe642;</i>编辑
-        </button>
-        <button class="layui-btn" id="del-btn">
-            <i class="layui-icon">&#xe640;</i>删除
-        </button>
+
+    <div class="layui-row">
+
+        <div class="layui-col-md4 layui-btn-group">
+            <a href="/server/add" class="layui-btn">
+                <i class="layui-icon">&#xe654;</i>增加
+            </a>
+            <button class="layui-btn" id="edit-btn" onclick="edit()">
+                <i class="layui-icon">&#xe642;</i>编辑
+            </button>
+            <button class="layui-btn" id="del-btn" onclick="del()">
+                <i class="layui-icon">&#xe640;</i>删除
+            </button>
+        </div>
+        <div class="layui-col-md8 layui-col-sm12">
+            <form class="layui-form layui-form-pane1" style="float:right;">
+                <div class="layui-inline">
+                    <input type="text" name="ip" id="query-ip" placeholder="请输入要查询的IP" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="group" id="query-group">
+                            <option value="">选择所在分组</option>
+                            {% for group in group_list %}
+                            <option value="{{group.id}}">{{group.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button class="layui-btn" id="query-btn" type="button" onclick="query()">
+                    <i class="layui-icon">&#xe615;</i>查询
+                </button>
+            </form>
+        </div>
+
     </div>
-    <div class="layui-btn-group">
-        <button class="layui-btn">
-            <i class="layui-icon">&#xe64c;</i>关联组
-        </button>
-    </div>
-    <table id="demo" class="layui-table" lay-skin="row"></table>
+
+
+    <table id="server-table" class="layui-table" lay-skin="row"></table>
 </div>
+
 <script type="text/html" id="item-tool">
     <div class="layui-btn-group">
         <button class="layui-btn layui-btn-small">
@@ -45,23 +71,31 @@
     </div>
 </script>
 <script>
-    layui.use('table', function () {
-        var table = layui.table;
-
+    var table
+    var serverIns;
+    layui.use(['table', 'layer', 'form'], function () {
+        table = layui.table;
+        var form = layui.form;
         //方法级渲染
-        window.demoTable = table.render({
-            elem: '#demo',
+        serverIns = table.render({
+            elem: '#server-table',
             url: '/server/list',
+            where: {
+                ip: $('#query-ip').val(),
+                group: $('#query-group').val()
+            },
             //,width: 900,
-            height: 520,
+            height: 720,
             cols: [[ //标题栏
                 {checkbox: true},
-                {field: 'id', title: 'ID', width: 80, sort: true},
+                //{field: 'id', title: 'ID', width: 80, sort: true},
                 {field: 'ip', title: 'IP', width: 250},
+                {field: 'group', title: '组', width: 150},
                 {field: 'login_type', title: '登录方式', width: 150},
                 {field: 'position', title: '机架位', width: 150},
                 {field: 'deploy_server', title: '部署', width: 150},
                 {field: 'purpose', title: '用途', width: 250},
+                {field: 'memo', title: '备注', width: 250},
                 //{field: 'title', title: '操作', width: 300, templet: '#item-tool'}
             ]],
             skin: 'row', //表格风格
@@ -69,13 +103,68 @@
             //,size: 'lg' //尺寸
             skin: 'nob',
             page: true, //是否显示分页
-            limits: [3, 5, 10],
-            limit: 3 //每页默认显示的数量
+            limits: [3, 5, 10, 20],
+            limit: 20 //每页默认显示的数量
             //,loading: false //请求数据时，是否显示loading
-            //,id: 'test' //ID
+            , id: 'server-table' //ID
         });
 
+
     });
+
+
+    var del = function () {
+        layer.confirm('确认删除？',
+            {icon: 3, title: '提示'},
+            function (index) {
+                //do something
+                var checkStatus = table.checkStatus('server-table');
+                var ids = [];
+                $.each(checkStatus.data, function (index, item) {
+                    ids.push(item.id);
+                })
+                var id_list = ids.join(',');
+                console.log(id_list)
+                $.ajax({
+                    url: "/server/form/delete",
+                    data: {
+                        'ids': id_list
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        layer.msg('删除成功')
+                        serverIns.reload();
+                    }
+                });
+                layer.close(index);
+            },
+            function (index) {
+
+            });
+    }
+
+    var edit = function () {
+
+        layui.use('layer', function () {
+            var checkStatus = table.checkStatus('server-table');
+            var id = checkStatus.data;
+            if (id.length != 1) {
+                layer.msg('每次只能编辑一条！')
+            } else {
+                location.href = "/server/edit?id=" + id[0].id;
+            }
+        })
+    }
+
+    var query = function () {
+        serverIns.reload({
+            where: {
+                ip: $('#query-ip').val(),
+                group: $('#query-group').val()
+            }
+        });
+    }
+
 </script>
 
 {% endblock%}

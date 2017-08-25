@@ -1,34 +1,45 @@
 # -*- coding:utf-8 -*-
-import importlib
-import logging
-import pkgutil
 
-from flask import Flask
+
+from flask import Flask, request
+from flask_login import LoginManager
+from flask_login.utils import current_user, current_app
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CsrfProtect
 
 from webapp import views
+from webapp.common.functional import get_reg_blueprint
 
-app = Flask(__name__, instance_relative_config=True, static_url_path='/static')
+app = Flask(__name__, instance_relative_config=True, static_url_path='')
 app.config.from_object('webapp.settings')
 db = SQLAlchemy(app)
 
+# csrf protection
+csrf = CsrfProtect()
+csrf.init_app(app)
 
-def get_reg_blueprint(path, skip_blueprints=[]):
-    bls = []
-    for loader, name, is_package in pkgutil.iter_modules([path]):
-        if is_package and name not in skip_blueprints:
-            try:
-                package = loader.find_module(name).load_module(name)
-                view_name = package.__name__ + '.view'
-                print view_name
-                view_module = importlib.import_module(view_name)
-                if hasattr(view_module, 'blueprint'):
-                    logging.info('Load blueprint:%s' % name)
-                    bls.append(view_module.blueprint)
-            except Exception, e:
-                logging.error("import %s modules error e=%s" % (name, e.message))
-                pass
-    return bls
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'webapp.views.login.login'
+login_manager.init_app(app)
 
-for bl in get_reg_blueprint(app.config.get('APP_PATH'), ['server_group',]):
+from webapp.models import User
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
+for bl in get_reg_blueprint(app.config.get('APP_PATH'), ['users', ]):
     app.register_blueprint(blueprint=bl)
+
+
+def user_valid():
+    if 'webapp.views.login.login' == request.endpoint:
+        pass
+    elif not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+
+app.before_request(user_valid)
