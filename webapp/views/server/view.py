@@ -4,7 +4,6 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from flask import render_template, request, jsonify
-from flask_login import login_required
 from service import ServerService
 from webapp.views.server import blueprint
 from webapp.views.login_type.service import LoginTypeService
@@ -16,7 +15,7 @@ from webapp.views.server_group.service import ServerGroupService
 @blueprint.route('/server/index', methods=['GET'])
 def index():
     server_groups = ServerGroupService.get_all()
-    return render_template('server/list.html',group_list=server_groups)
+    return render_template('server/list.html', group_list=server_groups)
 
 
 @blueprint.route('/server/list', methods=['GET', 'POST'])
@@ -72,7 +71,7 @@ def add_form():
                       memo=form.get('memo')
                       )
 
-    return jsonify({"code": 0})
+    return jsonify({'cod': 0})
 
 
 @blueprint.route('/server/form/edit', methods=['POST'])
@@ -87,7 +86,7 @@ def edit_form():
                         login_type=form.get('login_type_id'),
                         memo=form.get('memo')
                         )
-    return jsonify({"code": 0})
+    return jsonify({'code': 0})
 
 
 @blueprint.route('/server/form/delete', methods=['GET', 'POST'])

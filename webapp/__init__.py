@@ -15,8 +15,8 @@ app.config.from_object('webapp.settings')
 db = SQLAlchemy(app)
 
 # csrf protection
-csrf = CsrfProtect()
-csrf.init_app(app)
+#csrf = CsrfProtect()
+#csrf.init_app(app)
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
@@ -34,12 +34,15 @@ def load_user(user_id):
 for bl in get_reg_blueprint(app.config.get('APP_PATH'), ['users', ]):
     app.register_blueprint(blueprint=bl)
 
+LOGIN_REQUIRED_FILTER = ['server', 'inventory']
+
 
 def user_valid():
-    if 'webapp.views.login.login' == request.endpoint:
-        pass
-    elif not current_user.is_authenticated:
-        return current_app.login_manager.unauthorized()
+    url = str(request.url)
+    url_split = url.split('/')
+    if any(LOGIN_REQUIRED_FILTER) in url_split:
+        if not current_user.is_authenticated:
+            return current_app.login_manager.unauthorized()
 
 
 app.before_request(user_valid)

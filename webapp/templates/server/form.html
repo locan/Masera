@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "baseserver.html" %}
 {% block title %}
 <title>{{form_type}}服务器</title>
 {% endblock %}
@@ -20,13 +20,20 @@
     <h1>{{form_type}}服务器</h1>
     <div class="layui-col-md8 layui-col-sm12">
         <form class="layui-form" id="server_form">
-            <input type="hidden" name="id" required lay-verify="required" placeholder="请输入IP" autocomplete="off"
+            <input type="hidden" name="id" required lay-verify="required"
                    class="layui-input" value="{{id}}">
             <div class="layui-form-item">
                 <label class="layui-form-label">IP</label>
                 <div class="layui-input-block">
                     <input type="text" name="ip" required lay-verify="required" placeholder="请输入IP" autocomplete="off"
                            class="layui-input" value="{{ip}}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">系统</label>
+                <div class="layui-input-block">
+                    <input type="text" name="system_operation" required lay-verify="required" placeholder="请输入该服务器装配的系统" autocomplete="off"
+                           class="layui-input" value="{{system_operation}}">
                 </div>
             </div>
             <div class="layui-form-item">

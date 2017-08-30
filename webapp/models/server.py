@@ -1,4 +1,4 @@
-# -*- utf-8 -*-
+# -*- coding:utf-8 -*-
 from sqlalchemy.orm.exc import NoResultFound
 from webapp import db
 
@@ -10,6 +10,7 @@ class Server(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String(30), nullable=False, index=True)
+    system_operation = db.Column(db.String(50))
     purpose = db.Column(db.String(255), nullable=False)
     position = db.Column(db.String, default='')
     deploy_server = db.Column(db.String, default='')
@@ -20,8 +21,9 @@ class Server(db.Model):
     login_type = db.relationship('LoginType', backref=db.backref('server'))
     group = db.relationship('ServerGroup', backref=db.backref('servers'))
 
-    def __init__(self, ip=None, purpose=None, position=None, deploy_server=None, memo=None):
+    def __init__(self, ip=None, system_operation=None, purpose=None, position=None, deploy_server=None, memo=None):
         self.ip = ip
+        self.system_operation =system_operation
         self.purpose = purpose
         self.position = position
         self.deploy_server = deploy_server
@@ -68,6 +70,7 @@ class Server(db.Model):
         result = {
             'id': self.id,
             'ip': self.ip,
+            'system_operation': self.system_operation,
             'purpose': self.purpose,
             'position': self.position,
             'deploy_server': self.deploy_server,

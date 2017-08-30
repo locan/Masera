@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "baseserver.html" %}
 {% block title %}
 <title>服务器列表</title>
 {% endblock %}
@@ -90,6 +90,7 @@
                 {checkbox: true},
                 //{field: 'id', title: 'ID', width: 80, sort: true},
                 {field: 'ip', title: 'IP', width: 250},
+                {field: 'system_operation', title: '系统', width: 150},
                 {field: 'group', title: '组', width: 150},
                 {field: 'login_type', title: '登录方式', width: 150},
                 {field: 'position', title: '机架位', width: 150},

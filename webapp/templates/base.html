@@ -14,7 +14,9 @@
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
-    {% include "nav.html"%}
+    {% include "header.html"%}
+
+    {% block sidebar %}{% endblock %}
     {% block content %}{% endblock %}
     {% include "footer.html"%}
 </div>

@@ -1,0 +1,166 @@
+{% extends "baseinventory.html" %}
+{% block title %}
+<title>主机清单</title>
+{% endblock %}
+{% block content%}
+<div class="layui-body" style="padding: 15px;">
+    <!-- 内容主体区域 -->
+
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">主机清单</a>
+      <a><cite>列表</cite></a>
+    </span>
+    <br><br>
+
+    <div class="layui-row">
+
+        <div class="layui-col-md4 layui-btn-group">
+            <a href="/inventory/add" class="layui-btn">
+                <i class="layui-icon">&#xe654;</i>增加
+            </a>
+            <button class="layui-btn" id="edit-btn" onclick="edit()">
+                <i class="layui-icon">&#xe642;</i>编辑
+            </button>
+            <button class="layui-btn" id="del-btn" onclick="del()">
+                <i class="layui-icon">&#xe640;</i>删除
+            </button>
+        </div>
+        <div class="layui-col-md8 layui-col-sm12">
+            <form class="layui-form layui-form-pane1" style="float:right;">
+                <div class="layui-inline">
+                    <input type="text" name="name" id="query-name" placeholder="请输入要查询的名称" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="group" id="query-group">
+                            <option value="">选择所在分组</option>
+                            {% for group in group_list %}
+                            <option value="{{group.id}}">{{group.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button class="layui-btn" id="query-btn" type="button" onclick="query()">
+                    <i class="layui-icon">&#xe615;</i>查询
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+
+    <table id="inventory-table" class="layui-table" lay-skin="row"></table>
+</div>
+
+<script type="text/html" id="item-tool">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe654;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe642;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+        <button class="layui-btn layui-btn-small">
+            <i class="layui-icon">&#xe602;</i>
+        </button>
+    </div>
+</script>
+<script>
+    var table
+    var inventoryIns;
+    layui.use(['table', 'layer', 'form'], function () {
+        table = layui.table;
+        var form = layui.form;
+        //方法级渲染
+        inventoryIns = table.render({
+            elem: '#inventory-table',
+            url: '/inventory/list',
+            where: {
+                ip: $('#query-ip').val(),
+                group: $('#query-group').val()
+            },
+            //,width: 900,
+            height: 720,
+            cols: [[ //标题栏
+                {checkbox: true},
+                //{field: 'id', title: 'ID', width: 80, sort: true},
+                {field: 'name', title: '名称', width: 250},
+                {field: 'group', title: '组', width: 250},
+                {field: 'memo', title: '备注', width: 250},
+                //{field: 'title', title: '操作', width: 300, templet: '#item-tool'}
+            ]],
+            //skin: 'row', //表格风格
+            even: true,
+            //,size: 'lg' //尺寸
+            skin: 'nob',
+            page: true, //是否显示分页
+            limits: [3, 5, 10, 20],
+            limit: 20 //每页默认显示的数量
+            //,loading: false //请求数据时，是否显示loading
+            , id: 'inventory-table' //ID
+        });
+
+
+    });
+
+
+    var del = function () {
+        layer.confirm('确认删除？',
+            {icon: 3, title: '提示'},
+            function (index) {
+                //do something
+                var checkStatus = table.checkStatus('inventory-table');
+                var ids = [];
+                $.each(checkStatus.data, function (index, item) {
+                    ids.push(item.id);
+                })
+                var id_list = ids.join(',');
+
+                $.ajax({
+                    url: "/inventory/form/delete",
+                    data: {
+                        'ids': id_list
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        layer.msg('删除成功')
+                        inventoryIns.reload();
+                    }
+                });
+                layer.close(index);
+            },
+            function (index) {
+
+            });
+    }
+
+    var edit = function () {
+
+        layui.use('layer', function () {
+            var checkStatus = table.checkStatus('inventory-table');
+            var id = checkStatus.data;
+            if (id.length != 1) {
+                layer.msg('每次只能编辑一条！')
+            } else {
+                location.href = "/inventory/edit?id=" + id[0].id;
+            }
+        })
+    }
+
+    var query = function () {
+        inventoryIns.reload({
+            where: {
+                name: $('#query-name').val(),
+                group: $('#query-group').val()
+            }
+        });
+    }
+
+</script>
+
+{% endblock%}

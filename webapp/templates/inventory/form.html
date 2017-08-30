@@ -1,0 +1,140 @@
+{% extends "baseinventory.html" %}
+{% block title %}
+<title>{{form_type}}服务器</title>
+{% endblock %}
+{% block content%}
+<div class="layui-body" style="padding: 15px;">
+    <!-- 内容主体区域 -->
+
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">主机清单</a>
+      <a><cite>{{form_type}}</cite></a>
+    </span>
+    <br><br>
+    <a class="layui-btn layui-btn-small layui-btn-primary" href="javascript:history.go(-1)">
+        <i class="layui-icon">&#xe65c;</i> 返回
+    </a>
+    <br>
+    <hr>
+    <h1>{{form_type}}清单</h1>
+    <div class="layui-col-md8 layui-col-sm12">
+        <form class="layui-form" id="server_form">
+
+            <input type="hidden" name="id" required lay-verify="required"
+                   class="layui-input" value="{{id}}">
+            <input type="hidden" name="var_file_path" required lay-verify="required"
+                   class="layui-input" value="{{var_file_path}}">
+            <div class="layui-form-item">
+                <label class="layui-form-label">名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off"
+                           class="layui-input" value="{{name}}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">组</label>
+                <div class="layui-input-block">
+                    <select name="group_id" lay-verify="required" value="{{group_id}}">
+                        <option value="">未选择</option>
+                        {% for sg in server_group_list %}
+                        <option value="{{sg.id}}">{{sg.name}}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" name="memo" placeholder="备注" autocomplete="off" class="layui-input"
+                           value="{{memo}}">
+                </div>
+            </div>
+            <div class="layui-form-item" pane>
+                <label class="layui-form-label">VARIABLES</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="var_type" value="yaml" title="YAML" checked>
+                    <input type="radio" name="var_type" value="json" title="JSON" >
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" name="var_content"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="server-submit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        //Demo
+        layui.use('form', function () {
+            var form = layui.form;
+            if ('{{group_id}}') {
+                $('select[name=server_group_id]').val('{{group_id}}')
+            }
+            if ('{{login_type_id}}') {
+                $('select[name=login_type_id]').val('{{login_type_id}}')
+            }
+            form.render("select")
+        });
+        $('#server-submit').on('click', function () {
+            var ii = layer.load();
+            $('#server_form').on('submit', function () {
+                $(this).ajaxSubmit({
+                    type: 'post', // 提交方式 get/post
+                    url: '{{form_url}}', // 需要提交的 url
+                    success: function (data) { // data 保存提交后返回的数据，一般为 json 数据
+                        layer.close(ii);
+                        console.log(data);
+                        if (data.code == 0) {
+                            layer.confirm('{{form_type}}成功！是否返回列表？',
+                                {icon: 1, title: '提示'},
+                                function (index) {
+                                    //do something
+                                    location.href = "/inventory";
+                                    layer.close(index);
+                                },
+                                function (index) {
+                                    $('#server_form').resetForm();
+                                });
+                        } else {
+                            layer.msg('添加失败', {
+                                icon: 2,
+                                time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                            }, function () {
+                                layer.close(ii);
+                            });
+                        }
+                    },
+                    error: function () {
+                        layer.msg('请检查网络链接！', {
+                            icon: 2,
+                            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            layer.close(ii);
+                        });
+                    }
+                });
+                return false; // 阻止表单自动提交事件
+            });
+        });
+    </script>
+
+</div>
+
+<script>
+
+</script>
+
+{% endblock%}

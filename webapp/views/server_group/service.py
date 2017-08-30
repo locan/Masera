@@ -1,23 +1,30 @@
 # -*- coding: utf-8 -*-
 from webapp import db
 from webapp.models import ServerGroup
+from sqlalchemy.exc import IntegrityError
 
 
 class ServerGroupService(object):
-
     @staticmethod
     def add(name, memo):
-        group = ServerGroup(name, memo)
-        db.session.add(group)
-        db.session.commit()
-        return group
+        try:
+            group = ServerGroup(name, memo)
+            db.session.add(group)
+            db.session.commit()
+            return group
+        except IntegrityError:
+            db.session.rollback()
+            return None
 
     @staticmethod
     def alert(_id, name, memo):
-        sg = ServerGroup.query.get(_id)
-        sg.name = name
-        sg.memo = memo
-        db.session.commit()
+        try:
+            sg = ServerGroup.query.get(_id)
+            sg.name = name
+            sg.memo = memo
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 
     @staticmethod
     def get_all():
@@ -43,6 +50,3 @@ class ServerGroupService(object):
             db.session.delete(group)
         db.session.commit()
         return True
-
-
-

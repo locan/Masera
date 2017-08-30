@@ -1,16 +1,20 @@
 # -*- coding:utf-8 -*-
 from webapp import db
 from webapp.models import LoginType
+from sqlalchemy.exc import IntegrityError
 
 
 class LoginTypeService(object):
 
     @staticmethod
     def save(name):
-        login_type = LoginType(name)
-        db.session.add(login_type)
-        db.session.commit()
-        return login_type
+        try:
+            login_type = LoginType(name)
+            db.session.add(login_type)
+            db.session.commit()
+            return login_type
+        except IntegrityError:
+            db.session.rollback()
 
     @staticmethod
     def alert(_id, name):

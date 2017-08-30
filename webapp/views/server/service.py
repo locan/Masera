@@ -2,31 +2,41 @@
 
 from webapp import db
 from webapp.models import Server
+from sqlalchemy.exc import IntegrityError
 
 
 class ServerService(object):
     @staticmethod
-    def add(ip, group, purpose, login_type, position, deploy_server, memo):
-        server = Server(ip, purpose, position, deploy_server, memo)
-        server.login_type_id = login_type
-        server.group_id = group
-        db.session.add(server)
-        db.session.commit()
-        return server
+    def add(ip, system_operation, group, purpose, login_type, position, deploy_server, memo):
+        try:
+            server = Server(ip, system_operation, purpose, position, deploy_server, memo)
+            server.login_type_id = login_type
+            server.group_id = group
+            db.session.add(server)
+            db.session.commit()
+            return server
+        except IntegrityError:
+            db.session.rollback()
+            return None
 
     @staticmethod
-    def alert(_id, ip, group, purpose, login_type, position, deploy_server, memo):
-        server = Server.query.get(_id)
-        server.ip = ip
-        server.purpose = purpose
-        server.position = position
-        server.deploy_server = deploy_server
-        server.memo = memo
-        server.login_type_id = login_type
-        server.group_id = group
-        server.id = _id
-        db.session.commit()
-        return server
+    def alert(_id, ip, system_operation, group, purpose, login_type, position, deploy_server, memo):
+        try:
+            server = Server.query.get(_id)
+            server.ip = ip
+            server.system_operation = system_operation
+            server.purpose = purpose
+            server.position = position
+            server.deploy_server = deploy_server
+            server.memo = memo
+            server.login_type_id = login_type
+            server.group_id = group
+            server.id = _id
+            db.session.commit()
+            return server
+        except IntegrityError:
+            db.session.rollback()
+            return None
 
     @staticmethod
     def delete(id):
