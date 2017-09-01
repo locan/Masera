@@ -25,6 +25,9 @@
             <button class="layui-btn" id="del-btn" onclick="del()">
                 <i class="layui-icon">&#xe640;</i>删除
             </button>
+            <button class="layui-btn" id="detail-btn" onclick="inventory_detail()">
+                <i class="layui-icon">&#xe630;</i>详细
+            </button>
         </div>
         <div class="layui-col-md8 layui-col-sm12">
             <form class="layui-form layui-form-pane1" style="float:right;">
@@ -54,22 +57,6 @@
     <table id="inventory-table" class="layui-table" lay-skin="row"></table>
 </div>
 
-<script type="text/html" id="item-tool">
-    <div class="layui-btn-group">
-        <button class="layui-btn layui-btn-small">
-            <i class="layui-icon">&#xe654;</i>
-        </button>
-        <button class="layui-btn layui-btn-small">
-            <i class="layui-icon">&#xe642;</i>
-        </button>
-        <button class="layui-btn layui-btn-small">
-            <i class="layui-icon">&#xe640;</i>
-        </button>
-        <button class="layui-btn layui-btn-small">
-            <i class="layui-icon">&#xe602;</i>
-        </button>
-    </div>
-</script>
 <script>
     var table
     var inventoryIns;
@@ -159,6 +146,18 @@
                 group: $('#query-group').val()
             }
         });
+    }
+
+    var inventory_detail = function(){
+        layui.use('layer', function () {
+            var checkStatus = table.checkStatus('inventory-table');
+            var id = checkStatus.data;
+            if (id.length != 1) {
+                layer.msg('每次只能编辑一条！')
+            } else {
+                location.href = "/inventory/detail?id=" + id[0].id;
+            }
+        })
     }
 
 </script>

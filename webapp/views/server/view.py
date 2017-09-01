@@ -79,6 +79,7 @@ def edit_form():
     form = request.form
     ServerService.alert(_id=form.get('id'),
                         ip=form.get('ip'),
+                        system_operation=form.get('system_operation'),
                         group=form.get('server_group_id'),
                         purpose=form.get('purpose'),
                         deploy_server=form.get('deploy_server'),

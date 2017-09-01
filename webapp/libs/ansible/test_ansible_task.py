@@ -10,6 +10,9 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.playbook.play import Play
 from ansible.plugins.callback import CallbackBase
 from ansible.vars import VariableManager
+'''
+http://www.jianshu.com/p/c1af78d75f45 这个博客ansible介绍的比较全
+'''
 
 
 class ResultCallback(CallbackBase):

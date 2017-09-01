@@ -11,7 +11,7 @@ def get_reg_blueprint(path, skip_blueprints=[]):
             try:
                 package = loader.find_module(name).load_module(name)
                 view_name = package.__name__ + '.view'
-                print view_name
+                #print view_name
                 view_module = importlib.import_module(view_name)
                 if hasattr(view_module, 'blueprint'):
                     logging.info('Load blueprint:%s' % name)

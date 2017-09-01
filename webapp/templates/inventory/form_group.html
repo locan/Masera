@@ -1,6 +1,6 @@
-{% extends "baseserver.html" %}
+{% extends "baseinventory.html" %}
 {% block title %}
-<title>{{form_type}}服务器</title>
+<title>{{form_type}} Inventory Group</title>
 {% endblock %}
 {% block content%}
 <div class="layui-body" style="padding: 15px;">
@@ -8,7 +8,8 @@
 
     <span class="layui-breadcrumb">
       <a href="">首页</a>
-      <a href="">服务器</a>
+      <a href="">inventory</a>
+        <a href="">group</a>
       <a><cite>{{form_type}}</cite></a>
     </span>
     <br><br>
@@ -17,67 +18,27 @@
     </a>
     <br>
     <hr>
-    <h1>{{form_type}}服务器</h1>
     <div class="layui-col-md8 layui-col-sm12">
         <form class="layui-form" id="server_form">
-            <input type="hidden" name="id" required lay-verify="required"
-                   class="layui-input" value="{{id}}">
+
+            <input type="hidden" name="id" class="layui-input" value="{{id}}">
+            <input type="hidden" name="inventory_id" class="layui-input" value="{{inventory_id}}">
+
             <div class="layui-form-item">
-                <label class="layui-form-label">IP</label>
+                <label class="layui-form-label">名称</label>
                 <div class="layui-input-block">
-                    <input type="text" name="ip" required lay-verify="required" placeholder="请输入IP" autocomplete="off"
-                           class="layui-input" value="{{ip}}">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">系统</label>
-                <div class="layui-input-block">
-                    <input type="text" name="system_operation" required lay-verify="required" placeholder="请输入该服务器装配的系统" autocomplete="off"
-                           class="layui-input" value="{{system_operation}}">
+                    <input type="text" name="name" required lay-verify="required" placeholder="请输入名称" autocomplete="off"
+                           class="layui-input" value="{{name}}">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">组</label>
                 <div class="layui-input-block">
-                    <select name="server_group_id" lay-verify="required" value="{{group_id}}">
+                    <select name="group_id" lay-verify="required" value="{{group_id}}">
                         <option value="">未选择</option>
                         {% for sg in server_group_list %}
                         <option value="{{sg.id}}">{{sg.name}}</option>
                         {% endfor %}
-
-                    </select>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">用途</label>
-                <div class="layui-input-block">
-                    <input type="text" name="purpose" required lay-verify="required" placeholder="请输入用途"
-                           autocomplete="off" class="layui-input" value="{{purpose}}">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">部署系统</label>
-                <div class="layui-input-block">
-                    <input type="text" name="deploy_server" placeholder="部署系统或服务"
-                           autocomplete="off" class="layui-input" value="{{deploy_server}}">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">机架位置</label>
-                <div class="layui-input-block">
-                    <input type="text" name="position" placeholder="机架位置"
-                           autocomplete="off" class="layui-input" value="{{position}}">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">登录类型</label>
-                <div class="layui-input-block">
-                    <select name="login_type_id" lay-verify="required" value="{{login_type_id}}">
-                        <option value="">未选择</option>
-                        {% for lt in login_type_list %}
-                        <option value="{{lt.id}}">{{lt.name}}</option>
-                        {% endfor %}
-
                     </select>
                 </div>
             </div>
@@ -85,10 +46,10 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">备注</label>
                 <div class="layui-input-block">
-                    <input type="text" name="memo"  placeholder="备注" autocomplete="off" class="layui-input" value="{{memo}}">
+                    <input type="text" name="memo" placeholder="备注" autocomplete="off" class="layui-input"
+                           value="{{memo}}">
                 </div>
             </div>
-
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" id="server-submit">立即提交</button>
@@ -106,7 +67,7 @@
             if ('{{group_id}}') {
                 $('select[name=server_group_id]').val('{{group_id}}')
             }
-            if('{{login_type_id}}'){
+            if ('{{login_type_id}}') {
                 $('select[name=login_type_id]').val('{{login_type_id}}')
             }
             form.render("select")
@@ -125,7 +86,7 @@
                                 {icon: 1, title: '提示'},
                                 function (index) {
                                     //do something
-                                    location.href = "/";
+                                    location.href = "/inventory";
                                     layer.close(index);
                                 },
                                 function (index) {

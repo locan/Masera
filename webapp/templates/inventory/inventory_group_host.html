@@ -1,0 +1,92 @@
+{% extends "baseinventory.html" %}
+{% block title %}
+<title>主机清单</title>
+{% endblock %}
+{% block content%}
+<div class="layui-body" style="padding: 15px;">
+    <!-- 内容主体区域 -->
+
+    <span class="layui-breadcrumb">
+      <a href="">首页</a>
+      <a href="">主机清单</a>
+      <a><cite>Inventory</cite></a>
+    </span>
+    <br><br>
+    <blockquote class="layui-elem-quote">{{name}}</blockquote>
+    <div class="layui-row">
+        <div class="layui-col-md6" style="padding: 20px">
+            <a href="/inventory/group/add?inventoryid={{id}}" class="layui-btn">
+                <i class="layui-icon">&#xe654;</i>增加组
+            </a>
+            <table id="inventory-group-table" class="layui-table" lay-skin="row"></table>
+        </div>
+        <div class="layui-col-md6" style="padding: 20px">
+            <a href="/inventory/host?inventoryid={{id}}" class="layui-btn">
+                <i class="layui-icon">&#xe654;</i>增加host
+            </a>
+            <table id="inventory-host-table" class="layui-table" lay-skin="row"></table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    var table
+    var inventoryIns;
+    layui.use(['table', 'layer', 'form'], function () {
+        table = layui.table;
+        //方法级渲染
+        inventoryGroupIns = table.render({
+            elem: '#inventory-group-table',
+            url: '/inventory/group/list',
+            //,width: 900,
+            height: 500,
+            cols: [[ //标题栏
+                {checkbox: true},
+                //{field: 'id', title: 'ID', width: 80, sort: true},
+                {field: 'name', title: '名称', width: 350},
+                {title: '操作', width: 250, templet: '#item-tool'},
+
+                //{field: 'title', title: '操作', width: 300, templet: '#item-tool'}
+            ]],
+            //skin: 'row', //表格风格
+            even: true,
+            //,size: 'lg' //尺寸
+            skin: 'nob',
+            page: true, //是否显示分页
+            limits: [3, 5, 10, 20],
+            limit: 20 //每页默认显示的数量
+            //,loading: false //请求数据时，是否显示loading
+            , id: 'inventory-group-table' //ID
+        });
+
+        inventoryHostIns = table.render({
+            elem: '#inventory-host-table',
+            url: '/inventory/list',
+            height: 500,
+            cols: [[ //标题栏
+                {checkbox: true},
+                //{field: 'id', title: 'ID', width: 80, sort: true},
+                {field: 'name', title: '名称', width: 350},
+                {title: '操作', width: 250, templet: '#item-tool'},
+
+                //{field: 'title', title: '操作', width: 300, templet: '#item-tool'}
+            ]],
+           //skin: 'row', //表格风格
+            even: true,
+            //,size: 'lg' //尺寸
+            skin: 'nob',
+            page: true, //是否显示分页
+            limits: [3, 5, 10, 20],
+            limit: 20, //每页默认显示的数量
+            //,loading: false //请求数据时，是否显示loading
+            id: 'inventory-host-table' //ID
+        })
+
+
+    });
+</script>
+
+
+{% endblock%}

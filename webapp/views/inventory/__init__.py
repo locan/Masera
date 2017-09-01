@@ -2,4 +2,4 @@
 
 from flask import Blueprint
 
-blueprint = Blueprint(__name__, __name__)
+blueprint = Blueprint(__name__, __name__, url_prefix='/inventory')

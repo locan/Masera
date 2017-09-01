@@ -22,9 +22,9 @@ class Inventory(db.Model):
         self.memo = memo
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, _id):
         try:
-            return cls.query.get(id)
+            return cls.query.get(_id)
         except NoResultFound:
             return None
 
@@ -136,13 +136,16 @@ class InventoryServerGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     memo = db.Column(db.String)
+    inventory_id = db.Column(db.Integer, db.ForeignKey('mas_inventory.id'))
+    inventory = db.relationship('Inventory', backref=db.backref('inventory_server_groups'))
     group_id = db.Column(db.Integer, db.ForeignKey('mas_server_group.id'))
     group = db.relationship('ServerGroup', backref=db.backref('inventory_server_groups'))
 
-    def __init__(self, name, group_id, memo):
+    def __init__(self, name, group_id, inventory_id, memo):
         self.name = name
         self.group_id = group_id
         self.memo = memo
+        self.inventory_id = inventory_id
 
     @classmethod
     def get_by_id(cls, _id):
@@ -161,6 +164,8 @@ class InventoryServerGroup(db.Model):
                     q.append(cls.name == inventory_server_group.get('name'))
                 if 'group_id' in inventory_server_group:
                     q.append(cls.group_id == inventory_server_group.get('group_id'))
+                if 'inventory_id' in inventory_server_group:
+                    q.append(cls.inventory_id == inventory_server_group.get('inventory_id'))
             data = query.filter(*q).offset((page_no - 1) * page_size).limit(page_size).all()
             data = [s.to_dict() for s in data]
             return {
@@ -175,10 +180,13 @@ class InventoryServerGroup(db.Model):
             'id': self.id,
             'name': self.name,
             'group_id': self.group_id,
+            'inventory_id': self.inventory_id,
             'memo': self.memo
         }
         if self.group:
             result['group'] = self.group.name
+        if self.inventory:
+            result['inventory'] = self.inventory.name
         return result
 
     def __repr__(self):
