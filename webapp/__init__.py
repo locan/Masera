@@ -6,7 +6,6 @@ from flask_login import LoginManager
 from flask_login.utils import current_user, current_app
 from flask_sqlalchemy import SQLAlchemy
 
-from webapp import views
 from webapp.common.functional import get_reg_blueprint
 
 app = Flask(__name__, instance_relative_config=True, static_url_path='')
