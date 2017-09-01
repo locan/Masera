@@ -1,6 +1,4 @@
 # -*- coding:utf-8 -*-
-
-
 from flask import Flask, request
 from flask_login import LoginManager
 from flask_login.utils import current_user, current_app
@@ -33,7 +31,7 @@ LOGIN_REQUIRED_FILTER = set(['server', 'inventory'])
 
 def user_valid():
     url = str(request.url)
-    #print url
+    # print url
     url_split = url.split('/')
     print url_split
     if LOGIN_REQUIRED_FILTER & set(url_split):

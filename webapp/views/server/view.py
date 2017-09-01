@@ -1,13 +1,15 @@
 # -*- coding:utf-8 -*-
 import sys
 
+from flask import render_template, request, jsonify, redirect, url_for
+
+from service import ServerService
+from webapp.views.login_type.service import LoginTypeService
+from webapp.views.server import blueprint
+from webapp.views.server_group.service import ServerGroupService
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
-from flask import render_template, request, jsonify, redirect, url_for
-from service import ServerService
-from webapp.views.server import blueprint
-from webapp.views.login_type.service import LoginTypeService
-from webapp.views.server_group.service import ServerGroupService
 
 
 @blueprint.route('/', methods=['GET'])
