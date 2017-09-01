@@ -17,11 +17,10 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'webapp.views.login.login'
 login_manager.init_app(app)
 
-from webapp.models import User
-
 
 @login_manager.user_loader
 def load_user(user_id):
+    from webapp.models import User
     return User.query.get(user_id)
 
 
@@ -34,7 +33,9 @@ LOGIN_REQUIRED_FILTER = set(['server', 'inventory'])
 
 def user_valid():
     url = str(request.url)
+    #print url
     url_split = url.split('/')
+    print url_split
     if LOGIN_REQUIRED_FILTER & set(url_split):
         if not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()

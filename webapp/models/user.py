@@ -19,10 +19,7 @@ class User(UserMixin, db.Model):
     def get_by_username(self, username):
         user = User.query.filter_by(username=username).first()
         if user:
-            self.username = username
-            self.password_hash = user.password_hash
-            self.id = user.id
-            return self
+            return user
         else:
             return None
 

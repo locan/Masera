@@ -3,7 +3,7 @@ import sys
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from service import ServerService
 from webapp.views.server import blueprint
 from webapp.views.login_type.service import LoginTypeService
@@ -11,6 +11,10 @@ from webapp.views.server_group.service import ServerGroupService
 
 
 @blueprint.route('/', methods=['GET'])
+def _index():
+    return redirect(url_for('.index'))
+
+
 @blueprint.route('/server', methods=['GET'])
 @blueprint.route('/server/index', methods=['GET'])
 def index():
