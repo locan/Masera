@@ -13,7 +13,6 @@ app = Flask(__name__, instance_relative_config=True, static_url_path='')
 app.config.from_object('webapp.settings')
 db = SQLAlchemy(app)
 
-
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'webapp.views.login.login'
